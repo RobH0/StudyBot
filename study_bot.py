@@ -1,6 +1,4 @@
 from youtube_transcript_api import YouTubeTranscriptApi
-import json
-
 
 def get_video_id():
     url = str(input("Enter a URL of a Youtube video you want to take notes on: "))
@@ -20,7 +18,7 @@ def download_transcript(video_id):
     text_only_transcript = ''
     for line in video_transcript:
         text_only_transcript += ' ' + line['text']
-        
+
     return text_only_transcript
 
 if __name__ == "__main__":
