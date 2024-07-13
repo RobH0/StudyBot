@@ -36,21 +36,25 @@ def download_transcript(video_id):
     return text_only_transcript
 
 def summarize_into_notes(transcript, video_title):
-    ollama_host = 'http://localhost:11434' # Change if you are running ollama on a remote machine.
-    client = ollama.Client(host=ollama_host)
+    try:
+        ollama_host = 'http://localhost:11434' # Change if you are running ollama on a remote machine.
+    
+        client = ollama.Client(host=ollama_host)
 
-    model_name = 'gemma2' # Change if you are using a different model.
-    prompt_text = f"You are tasked with summarizing a transcript from an educational video to help a student. Please create concise notes that include all key technical terms, acronyms, concepts, commands (with arguments), steps, and definitions from the transcript. Transcript: {transcript}. Use the video title ({video_title}) and the transcript to write an appropriate title for the notes. Format the notes in Markdown, wrapping commands and code in backticks. Exclude any Ad/Advert content. Ensure the video title is referenced within the notes for easy identification by the student. The notes should be concise (but don't oversimplify) and well formated using markdown to make it easier to study from."
-    
-    print("\nStarting notes generation...\n")
-    stream = client.generate(model=model_name, prompt=prompt_text, stream=True)
-    
-    notes = ''
-    for chunk in stream:
-        print(chunk['response'], end='', flush=True)
-        notes += chunk['response']
-    
-    return notes
+        model_name = 'gemma2' # Change if you are using a different model.
+        prompt_text = f"You are tasked with summarizing a transcript from an educational video to help a student. Please create concise notes that include all key technical terms, acronyms, concepts, commands (with arguments), steps, and definitions from the transcript. Transcript: {transcript}. Use the video title ({video_title}) and the transcript to write an appropriate title for the notes. Format the notes in Markdown, wrapping commands and code in backticks. Exclude any Ad/Advert content. Ensure the video title is referenced within the notes for easy identification by the student. The notes should be concise (but don't oversimplify) and well formated using markdown to make it easier to study from."
+
+        print("\nStarting notes generation...\n")
+        stream = client.generate(model=model_name, prompt=prompt_text, stream=True)
+
+        notes = ''
+        for chunk in stream:
+            print(chunk['response'], end='', flush=True)
+            notes += chunk['response']
+        return notes
+    except:
+        print('Notes generation request failed.\nMake sure your ollama server is running.\n')
+        return False
 
 def save_notes_md(notes, video_title):
     filename = video_title + '.md'
@@ -60,6 +64,7 @@ def save_notes_md(notes, video_title):
 
 if __name__ == "__main__":
     url = str(input("Enter a URL of a Youtube video you want to take notes on: "))
+    filename = str(input("What do you want the generated notes file to be called? "))
     video_id = get_video_id(url)
     if video_id != False:
         video_title = get_video_title(url)
@@ -69,6 +74,7 @@ if __name__ == "__main__":
             print(' - ID: ' + video_id)
             text_only_transcript = download_transcript(video_id)
             notes = summarize_into_notes(text_only_transcript, video_title)
-            save_notes_md(notes, video_title)
+            if notes != False:
+                save_notes_md(notes, filename)
         
     
