@@ -1,8 +1,10 @@
 from youtube_transcript_api import YouTubeTranscriptApi
 import ollama
+import requests
+from bs4 import BeautifulSoup
 
-def get_video_id():
-    url = str(input("Enter a URL of a Youtube video you want to take notes on: "))
+
+def get_video_id(url):
     if "youtube.com/watch?v=" in url:
         print("Valid url")
         start_index = url.find('=') + 1
@@ -14,6 +16,18 @@ def get_video_id():
         print("Invalid URL. Must be a link to a youtube video.")
         return False
 
+def get_video_title(url):
+    response = requests.get(url)
+
+    if response.status_code != 200:
+        print('Failed to retrieve webpage')
+        return False
+    
+    parsed_html = BeautifulSoup(response.content, 'html.parser')
+    video_title = parsed_html.title.string.replace(' - YouTube', '')
+
+    return video_title
+
 def download_transcript(video_id):
     video_transcript = YouTubeTranscriptApi.get_transcript(video_id)
     text_only_transcript = ''
@@ -22,10 +36,11 @@ def download_transcript(video_id):
 
     return text_only_transcript
 
-def summarize_into_notes(transcript):
+def summarize_into_notes(transcript, video_title):
     client = ollama.Client(host='http://localhost:11434')
-    #stream = client.chat(model='gemma2', messages=[{'role': 'user', 'content': 'hello are you there'}], stream=True)
-    prompt_text = 'You are tasked with helping a student by summarizing a transcript from an educational video. Please summarize the following transcript into concise notes while not leaving out any key technical terms, acronyms, or definitions: ' + transcript
+    
+    prompt_text = f"You are tasked with summarizing a transcript from an educational video to help a student. Please create concise notes that include all key technical terms, acronyms, concepts, commands (with arguments), steps, and definitions from the transcript. Transcript: {transcript}. Use the video title ({video_title}) and the transcript to write an appropriate title for the notes. Format the notes in Markdown, wrapping commands and code in backticks. Exclude any Ad/Advert content. Ensure the video title is referenced within the notes for easy identification by the student. The notes should be concise (but don't oversimplify) and well formated using markdown to make it easier to study from."
+
     stream = client.generate(model='gemma2', prompt=prompt_text, stream=True)
     print('\n')
     
@@ -36,18 +51,20 @@ def summarize_into_notes(transcript):
     
     return notes
 
-def save_notes_md(notes):
-    filename = 'example.md'
+def save_notes_md(notes, video_title):
+    filename = video_title + '.md'
     with open(filename, "w") as file:
         file.write(notes)
-    # my_string.partition('\n')[0]
 
 
 if __name__ == "__main__":
-    video_id = get_video_id()
+    url = str(input("Enter a URL of a Youtube video you want to take notes on: "))
+    video_id = get_video_id(url)
     if video_id != False:
-        text_only_transcript = download_transcript(video_id)
-        notes = summarize_into_notes(text_only_transcript)
-        save_notes_md(notes)
+        video_title = get_video_title(url)
+        if video_title != False:
+            text_only_transcript = download_transcript(video_id)
+            notes = summarize_into_notes(text_only_transcript, video_title)
+            save_notes_md(notes, video_title)
         
     
