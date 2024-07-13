@@ -6,14 +6,13 @@ from bs4 import BeautifulSoup
 
 def get_video_id(url):
     if "youtube.com/watch?v=" in url:
-        print("Valid url")
+        print("\nValid URL")
         start_index = url.find('=') + 1
         end_index= start_index+11
         id = url[start_index:end_index]
-        print("id " + str(id))
         return id
     else:
-        print("Invalid URL. Must be a link to a youtube video.")
+        print("Invalid URL. URL must link to a youtube video.")
         return False
 
 def get_video_title(url):
@@ -37,12 +36,14 @@ def download_transcript(video_id):
     return text_only_transcript
 
 def summarize_into_notes(transcript, video_title):
-    client = ollama.Client(host='http://localhost:11434')
-    
-    prompt_text = f"You are tasked with summarizing a transcript from an educational video to help a student. Please create concise notes that include all key technical terms, acronyms, concepts, commands (with arguments), steps, and definitions from the transcript. Transcript: {transcript}. Use the video title ({video_title}) and the transcript to write an appropriate title for the notes. Format the notes in Markdown, wrapping commands and code in backticks. Exclude any Ad/Advert content. Ensure the video title is referenced within the notes for easy identification by the student. The notes should be concise (but don't oversimplify) and well formated using markdown to make it easier to study from."
+    ollama_host = 'http://localhost:11434' # Change if you are running ollama on a remote machine.
+    client = ollama.Client(host=ollama_host)
 
-    stream = client.generate(model='gemma2', prompt=prompt_text, stream=True)
-    print('\n')
+    model_name = 'gemma2' # Change if you are using a different model.
+    prompt_text = f"You are tasked with summarizing a transcript from an educational video to help a student. Please create concise notes that include all key technical terms, acronyms, concepts, commands (with arguments), steps, and definitions from the transcript. Transcript: {transcript}. Use the video title ({video_title}) and the transcript to write an appropriate title for the notes. Format the notes in Markdown, wrapping commands and code in backticks. Exclude any Ad/Advert content. Ensure the video title is referenced within the notes for easy identification by the student. The notes should be concise (but don't oversimplify) and well formated using markdown to make it easier to study from."
+    
+    print("\nStarting notes generation...\n")
+    stream = client.generate(model=model_name, prompt=prompt_text, stream=True)
     
     notes = ''
     for chunk in stream:
@@ -63,6 +64,9 @@ if __name__ == "__main__":
     if video_id != False:
         video_title = get_video_title(url)
         if video_title != False:
+            print('\nVideo Info:')
+            print(' - Title: ' + video_title)
+            print(' - ID: ' + video_id)
             text_only_transcript = download_transcript(video_id)
             notes = summarize_into_notes(text_only_transcript, video_title)
             save_notes_md(notes, video_title)
