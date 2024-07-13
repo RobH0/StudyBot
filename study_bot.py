@@ -28,12 +28,26 @@ def summarize_into_notes(transcript):
     prompt_text = 'You are tasked with helping a student by summarizing a transcript from an educational video. Please summarize the following transcript into concise notes while not leaving out any key technical terms, acronyms, or definitions: ' + transcript
     stream = client.generate(model='gemma2', prompt=prompt_text, stream=True)
     print('\n')
+    
+    notes = ''
     for chunk in stream:
         print(chunk['response'], end='', flush=True)
+        notes += chunk['response']
+    
+    return notes
+
+def save_notes_md(notes):
+    filename = 'example.md'
+    with open(filename, "w") as file:
+        file.write(notes)
+    # my_string.partition('\n')[0]
+
 
 if __name__ == "__main__":
     video_id = get_video_id()
     if video_id != False:
         text_only_transcript = download_transcript(video_id)
-        summarize_into_notes(text_only_transcript)
+        notes = summarize_into_notes(text_only_transcript)
+        save_notes_md(notes)
+        
     
