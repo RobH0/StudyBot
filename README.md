@@ -1,8 +1,10 @@
 # StudyBot
 
-A note taking assistant that can help you summarize educational YouTube videos into concise study notes.
+A note taking assistant that helps you summarize educational YouTube videos into concise study notes.
 
-Each study note is written to disk as a Markdown file.
+**Project created during Hack Your Portfolio hackathon event hosted by MLH (Major League Hacking).**
+
+![Screenshot of StudyBot CLI.](https://github.com/RobH0/project-gifs/blob/main/StudyBot-preview.png)
 
 ## Installation
 
@@ -53,3 +55,13 @@ Each study note is written to disk as a Markdown file.
     # Windows
     python study_bot.py
 3. Respond to prompts displayed in your terminal.
+
+## How it works
+
+A user is prompted to provide a URL to a YouTube video and pick a filename that will be used when the generated notes are saved to disk.
+
+Once the user enters the prompted information into the CLI, the 'study_bot.py' script retrieves the YouTube video's title and English language transcript.
+
+The YouTube video title and its transcript are used in a prompt that instructs the Gemma2 LLM (Large Language Model), run by Ollama, to summarize the transcript of the video into a concise study note document.
+
+Once Gemma2 has finished generating the study note, it is saved as a Markdown file on disk, allowing the user to view it whenever required. 
