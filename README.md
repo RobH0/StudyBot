@@ -2,7 +2,9 @@
 
 A note taking assistant that can help you summarize educational YouTube videos into concise study notes.
 
-Each study note is written to disk as a Markdown file.
+**Project created during Hack Your Portfolio hackathon event hosted by MLH (Major League Hacking)**
+
+![Screenshot of StudyBot CLI.](https://github.com/RobH0/project-gifs/blob/main/StudyBot-preview.png)
 
 ## Installation
 
@@ -53,3 +55,6 @@ Each study note is written to disk as a Markdown file.
     # Windows
     python study_bot.py
 3. Respond to prompts displayed in your terminal.
+
+## How it works
+
