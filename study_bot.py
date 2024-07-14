@@ -8,7 +8,7 @@ def get_video_id(url):
     if "youtube.com/watch?v=" in url:
         print("\nValid URL")
         start_index = url.find('=') + 1
-        end_index= start_index+11
+        end_index= start_index + 11
         id = url[start_index:end_index]
         return id
     else:
@@ -37,7 +37,7 @@ def download_transcript(video_id):
 
 def summarize_into_notes(transcript, video_title):
     try:
-        ollama_host = 'http://localhost:11434' # Change if you are running ollama on a remote machine.
+        ollama_host = 'http://localhost:11434' # Change if you are running Ollama on a remote machine or if it's running on a non-default port.
     
         client = ollama.Client(host=ollama_host)
 
