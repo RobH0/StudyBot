@@ -63,6 +63,17 @@ def save_notes_md(notes, video_title):
 
 
 if __name__ == "__main__":
+
+    print("""   
+  ______                _       ______             
+ / _____) _            | |     (____  \\        _   
+( (____ _| |_ _   _  __| |_   _ ____)  ) ___ _| |_ 
+ \\____ (_   _) | | |/ _  | | | |  __  ( / _ (_   _)
+ _____) )| |_| |_| ( (_| | |_| | |__)  ) |_| || |_ 
+(______/  \\__)____/ \\____|\\__  |______/ \\___/  \\__)
+                         (____/                    
+
+          """)
     url = str(input("Enter a URL of a Youtube video you want to take notes on: "))
     filename = str(input("What do you want the generated notes file to be called? "))
     video_id = get_video_id(url)
