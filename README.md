@@ -2,6 +2,8 @@
 
 A note taking assistant that can help you summarize educational YouTube videos into concise study notes.
 
+Each study note is written to disk as a Markdown file.
+
 ## Installation
 
 ### Setup Ollama server
